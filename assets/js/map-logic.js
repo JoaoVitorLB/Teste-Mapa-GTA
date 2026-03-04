@@ -22,8 +22,8 @@ function initMap() {
     // Definimos o sistema de coordenadas simples para um mapa de imagem
     map = L.map('map', {
         crs: L.CRS.Simple,
-        minZoom: -2,  // Permitir dar mais zoom out
-        maxZoom: 4,
+        minZoom: -3,  // Permitir dar mais zoom out
+        maxZoom: 3,
         zoomControl: false,
         attributionControl: false
     });
@@ -31,24 +31,28 @@ function initMap() {
     // Adiciona o controle de zoom no lado direito
     L.control.zoom({ position: 'topright' }).addTo(map);
 
-    // Bounds baseados no tamanho da imagem (8192x8192)
-    const mapBounds = [[0, 0], [MapConfig.MAP_HEIGHT, MapConfig.MAP_WIDTH]];
+    // Tamanho real da imagem de referência (8192x8192)
+    const h = 8192;
+    const w = 8192;
+    const mapBounds = [[0, 0], [h, w]];
 
-    // URL de uma imagem de alta resolução do mapa do GTA V (Atlas Style)
-    // Usamos uma versão hospedada no GitHub/Community para maior estabilidade
-    const mapImageUrl = 'https://media.githubusercontent.com/media/Gamer-Mao/GTA5-Map-Tiles/master/mapStyles/style1/map.png';
-    // Fallback caso a anterior falhe: 'https://www.bragitoff.com/wp-content/uploads/2015/11/GTAV_ATLUS_8192x8192.png'
+    // Tentativa com uma imagem hospedada no Imgur (comumente usada e estável para overlays rápidos)
+    // Se esta não carregar, o problema pode ser bloqueio de rede ou CORS
+    const mapImageUrl = 'https://i.imgur.com/9v4J4n1.jpg'; // Mapa Atlas em HD
 
     const image = L.imageOverlay(mapImageUrl, mapBounds, {
         opacity: 1.0,
-        interactive: true // Permite cliques na imagem
+        interactive: true
     }).addTo(map);
 
-    // Ajusta o mapa para os limites da imagem
-    map.fitBounds(mapBounds);
+    // Se o carregamento da imagem falhar, avisa o usuário
+    image.on('error', function () {
+        alert('Erro ao carregar a imagem do mapa. Verifique sua conexão ou tente recarregar a página.');
+    });
 
-    // Define a visão inicial no centro da ilha (aproximadamente)
-    map.setView([4500, 4000], -1);
+    // Ajusta o mapa para os limites da imagem e centraliza
+    map.fitBounds(mapBounds);
+    map.setView([h / 2, w / 2], -2);
 
     // Evento de clique para adicionar checkpoint
     map.on('click', function (e) {
