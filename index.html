@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GTA V Race Planner | O Criador de Percursos Definitivo</title>
+    <meta name="description" content="Planeje suas corridas no GTA V com marcações interativas e traçados automáticos.">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-accent">GTA V</span> Race Planner
+                </div>
+                <p class="subtitle">Planejador de Checkpoints</p>
+            </div>
+
+            <div class="controls">
+                <button id="clear-all" class="btn btn-danger">
+                    <i data-lucide="trash-2"></i> Limpar Tudo
+                </button>
+                <button id="export-json" class="btn btn-secondary">
+                    <i data-lucide="download"></i> Exportar
+                </button>
+            </div>
+
+            <div class="checkpoint-list-container">
+                <h3>Checkpoints (<span id="cp-count">0</span>)</h3>
+                <ul id="checkpoint-list" class="checkpoint-list">
+                    <!-- Checkpoints serão adicionados aqui via JS -->
+                    <li class="empty-state">Clique no mapa para adicionar o primeiro checkpoint.</li>
+                </ul>
+            </div>
+
+            <div class="stats-panel">
+                <div class="stat-item">
+                    <span class="stat-label">Distância Total</span>
+                    <span id="total-distance" class="stat-value">0.00 km</span>
+                </div>
+            </div>
+            
+            <footer class="sidebar-footer">
+                <p>Desenvolvido para entusiastas de GTA</p>
+            </footer>
+        </aside>
+
+        <!-- Toggle Sidebar (Mobile) -->
+        <button id="toggle-sidebar" class="toggle-btn">
+            <i data-lucide="menu"></i>
+        </button>
+
+        <!-- Map Container -->
+        <main id="map" class="map-view"></main>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <!-- App Logic -->
+    <script src="assets/js/map-logic.js"></script>
+    <script src="assets/js/checkpoints.js"></script>
+    
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>
