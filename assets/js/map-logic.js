@@ -19,40 +19,43 @@ let markers = [];
 let routeLines = null;
 
 function initMap() {
-    // Usamos L.CRS.Simple para um sistema de coordenadas plano (pixels)
+    // Definimos o sistema de coordenadas simples para um mapa de imagem
     map = L.map('map', {
         crs: L.CRS.Simple,
-        minZoom: MapConfig.MIN_ZOOM,
-        maxZoom: MapConfig.MAX_ZOOM,
-        zoomControl: false // Vamos colocar no lado direito depois
+        minZoom: -2,  // Permitir dar mais zoom out
+        maxZoom: 4,
+        zoomControl: false,
+        attributionControl: false
     });
 
     // Adiciona o controle de zoom no lado direito
     L.control.zoom({ position: 'topright' }).addTo(map);
 
-    // Como não temos tiles offline aqui, usaremos um ImageOverlay ou Tiles públicos se disponíveis
-    // Para este exemplo, usaremos uma técnica de "Infinite Background" ou uma imagem única grande
+    // Bounds baseados no tamanho da imagem (8192x8192)
     const mapBounds = [[0, 0], [MapConfig.MAP_HEIGHT, MapConfig.MAP_WIDTH]];
-    
-    // Tentar usar tiles de um repositório conhecido da comunidade GTA V
-    const tileLayer = L.tileLayer('https://s.rsg.sc/sc/images/games/GTAV/map/atlas/{z}/{x}/{y}.jpg', {
-        attribution: 'Map data &copy; Rockstar Games',
-        noWrap: true,
-        bounds: mapBounds
-    });
 
-    // Se os tiles do Social Club falharem (eles mudam as vezes), temos o fallback da imagem única
-    // L.imageOverlay('assets/images/gta-map.jpg', mapBounds).addTo(map);
-    
-    tileLayer.addTo(map);
+    // URL de uma imagem de alta resolução do mapa do GTA V (Atlas Style)
+    // Usamos uma versão hospedada no GitHub/Community para maior estabilidade
+    const mapImageUrl = 'https://media.githubusercontent.com/media/Gamer-Mao/GTA5-Map-Tiles/master/mapStyles/style1/map.png';
+    // Fallback caso a anterior falhe: 'https://www.bragitoff.com/wp-content/uploads/2015/11/GTAV_ATLUS_8192x8192.png'
+
+    const image = L.imageOverlay(mapImageUrl, mapBounds, {
+        opacity: 1.0,
+        interactive: true // Permite cliques na imagem
+    }).addTo(map);
+
+    // Ajusta o mapa para os limites da imagem
     map.fitBounds(mapBounds);
-    map.setView([3000, 4000], MapConfig.INITIAL_ZOOM);
+
+    // Define a visão inicial no centro da ilha (aproximadamente)
+    map.setView([4500, 4000], -1);
 
     // Evento de clique para adicionar checkpoint
-    map.on('click', function(e) {
+    map.on('click', function (e) {
         addCheckpoint(e.latlng);
     });
 }
+
 
 // Converte coordenadas do mapa (Leaflet) para coordenadas "estimadas" do jogo GTA V
 // Isso é uma aproximação baseada no centro do mapa ser 0,0
@@ -65,7 +68,7 @@ function mapToGameCoords(latlng) {
 // Inicializa quando o DOM carregar
 window.addEventListener('DOMContentLoaded', () => {
     initMap();
-    
+
     // Toggle sidebar on mobile
     const sidebar = document.getElementById('sidebar');
     const toggleBtn = document.getElementById('toggle-sidebar');
