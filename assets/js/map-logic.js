@@ -19,10 +19,10 @@ let markers = [];
 let routeLines = null;
 
 function initMap() {
-    // Definimos o sistema de coordenadas simples para um mapa de imagem
+    // Definimos o sistema de coordenadas simples
     map = L.map('map', {
         crs: L.CRS.Simple,
-        minZoom: -3,  // Permitir dar mais zoom out
+        minZoom: -3,
         maxZoom: 3,
         zoomControl: false,
         attributionControl: false
@@ -31,23 +31,21 @@ function initMap() {
     // Adiciona o controle de zoom no lado direito
     L.control.zoom({ position: 'topright' }).addTo(map);
 
-    // Tamanho real da imagem de referência (8192x8192)
-    const h = 8192;
-    const w = 8192;
-    const mapBounds = [[0, 0], [h, w]];
+    // Servidor de Tiles do RageMP (Extremamente estável)
+    // Estilo Atlas - se este falhar, o problema é 100% o protocolo file:/// bloqueando o carregamento
+    const tileUrl = 'https://tiles.rage.mp/gtav_atlas/{z}/{x}/{y}.png';
 
-    // Usando o servidor de tiles da comunidade (gtav-map.github.io)
-    // Este é o método mais estável e profissional.
-    const tileLayer = L.tileLayer('https://gtav-map.github.io/map-tiles/mapStyles/style1/{z}/{x}/{y}.png', {
-        minZoom: -2,
-        maxZoom: 2,
+    L.tileLayer(tileUrl, {
+        minZoom: -3,
+        maxZoom: 3,
+        minNativeZoom: 0,
+        maxNativeZoom: 5,
         noWrap: true,
-        bounds: mapBounds,
-        attribution: 'GTA V Map'
+        bounds: [[-8192, -8192], [8192, 8192]]
     }).addTo(map);
 
-    // Ajusta o mapa para o centro da ilha
-    map.setView([4000, 4000], -1);
+    // Centraliza em Los Santos (Coordenadas relativas do sistema simples)
+    map.setView([-1000, 1000], -1);
 
     // Evento de clique para adicionar checkpoint
     map.on('click', function (e) {
