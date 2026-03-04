@@ -36,23 +36,18 @@ function initMap() {
     const w = 8192;
     const mapBounds = [[0, 0], [h, w]];
 
-    // Novo link de mapa de comunidade (Atlas High Res)
-    const mapImageUrl = 'https://i.ibb.co/V3YyX8G/gta5-map.jpg';
-
-    const image = L.imageOverlay(mapImageUrl, mapBounds, {
-        opacity: 1.0,
-        interactive: true
+    // Usando o servidor de tiles da comunidade (gtav-map.github.io)
+    // Este é o método mais estável e profissional.
+    const tileLayer = L.tileLayer('https://gtav-map.github.io/map-tiles/mapStyles/style1/{z}/{x}/{y}.png', {
+        minZoom: -2,
+        maxZoom: 2,
+        noWrap: true,
+        bounds: mapBounds,
+        attribution: 'GTA V Map'
     }).addTo(map);
 
-
-    // Se o carregamento da imagem falhar, avisa o usuário
-    image.on('error', function () {
-        alert('Erro ao carregar a imagem do mapa. Verifique sua conexão ou tente recarregar a página.');
-    });
-
-    // Ajusta o mapa para os limites da imagem e centraliza
-    map.fitBounds(mapBounds);
-    map.setView([h / 2, w / 2], -2);
+    // Ajusta o mapa para o centro da ilha
+    map.setView([4000, 4000], -1);
 
     // Evento de clique para adicionar checkpoint
     map.on('click', function (e) {
