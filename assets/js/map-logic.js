@@ -22,49 +22,41 @@ function initMap() {
     // Definimos o sistema de coordenadas simples
     map = L.map('map', {
         crs: L.CRS.Simple,
-        minZoom: -2,
-        maxZoom: 2,
+        minZoom: 1,
+        maxZoom: 6,
         zoomControl: false,
-        attributionControl: false,
-        backgroundColor: '#0b0c0e'
+        attributionControl: false
     });
 
     // Adiciona o controle de zoom no lado direito
     L.control.zoom({ position: 'topright' }).addTo(map);
 
-    /**
-     * Definitive Fix: O servidor gta5-map.github.io usa um padrão de nomeação customizado.
-     * Padrão: {z}-{x}_{y}.png
-     */
-    const GtaTileLayer = L.TileLayer.extend({
-        getTileUrl: function (coords) {
-            const z = coords.z;
-            const x = coords.x;
-            const y = coords.y;
-            // O servidor deles usa o padrão z-x_y
-            return `https://gta5-map.github.io/tiles/road/${z}-${x}_${y}.png`;
-        }
-    });
+    // Servidor de Tiles Oficial da Rockstar (Social Club)
+    // Este é o mais estável e garantido
+    const tileUrl = 'https://s.rsg.sc/sc/images/games/GTAV/map/atlas/{z}/{x}/{y}.jpg';
 
-    const gtaTiles = new GtaTileLayer('', {
-        minZoom: 0,
-        maxZoom: 2,
+    L.tileLayer(tileUrl, {
+        minZoom: 1,
+        maxZoom: 6,
         noWrap: true,
-        bounds: [[-8192, -8192], [8192, 8192]]
+        bounds: [[-512, 0], [0, 512]] // Limites aproximados para o zoom inicial
     }).addTo(map);
 
-    // Se o serviço de tiles falhar, temos um fallback de imagem única de alta resolução
-    // Mas os tiles acima estão confirmados como funcionais.
+    // Centraliza o mapa em Los Santos
+    // No Zoom 1, o mapa tem 512x512 pixels. [-256, 256] é o centro aproximado.
+    map.setView([-256, 256], 2);
 
-    // Configura a visão inicial para focar no centro do mapa (Los Santos)
-    // No sistema CRS.Simple, precisamos de valores que façam sentido
-    map.setView([-4000, 4000], 0);
+    // Força o Leaflet a recalcular o tamanho do container após o carregamento
+    setTimeout(() => {
+        map.invalidateSize();
+    }, 500);
 
     // Evento de clique para adicionar checkpoint
     map.on('click', function (e) {
         addCheckpoint(e.latlng);
     });
 }
+
 
 
 
