@@ -36,14 +36,14 @@ function initMap() {
     const w = 8192;
     const mapBounds = [[0, 0], [h, w]];
 
-    // Tentativa com uma imagem hospedada no Imgur (comumente usada e estável para overlays rápidos)
-    // Se esta não carregar, o problema pode ser bloqueio de rede ou CORS
-    const mapImageUrl = 'https://i.imgur.com/9v4J4n1.jpg'; // Mapa Atlas em HD
+    // Novo link de mapa de comunidade (Atlas High Res)
+    const mapImageUrl = 'https://i.ibb.co/V3YyX8G/gta5-map.jpg';
 
     const image = L.imageOverlay(mapImageUrl, mapBounds, {
         opacity: 1.0,
         interactive: true
     }).addTo(map);
+
 
     // Se o carregamento da imagem falhar, avisa o usuário
     image.on('error', function () {
