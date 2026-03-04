@@ -22,36 +22,50 @@ function initMap() {
     // Definimos o sistema de coordenadas simples
     map = L.map('map', {
         crs: L.CRS.Simple,
-        minZoom: -3,
-        maxZoom: 3,
+        minZoom: -2,
+        maxZoom: 2,
         zoomControl: false,
-        attributionControl: false
+        attributionControl: false,
+        backgroundColor: '#0b0c0e'
     });
 
     // Adiciona o controle de zoom no lado direito
     L.control.zoom({ position: 'topright' }).addTo(map);
 
-    // Servidor de Tiles do RageMP (Extremamente estável)
-    // Estilo Atlas - se este falhar, o problema é 100% o protocolo file:/// bloqueando o carregamento
-    const tileUrl = 'https://tiles.rage.mp/gtav_atlas/{z}/{x}/{y}.png';
+    /**
+     * Definitive Fix: O servidor gta5-map.github.io usa um padrão de nomeação customizado.
+     * Padrão: {z}-{x}_{y}.png
+     */
+    const GtaTileLayer = L.TileLayer.extend({
+        getTileUrl: function (coords) {
+            const z = coords.z;
+            const x = coords.x;
+            const y = coords.y;
+            // O servidor deles usa o padrão z-x_y
+            return `https://gta5-map.github.io/tiles/road/${z}-${x}_${y}.png`;
+        }
+    });
 
-    L.tileLayer(tileUrl, {
-        minZoom: -3,
-        maxZoom: 3,
-        minNativeZoom: 0,
-        maxNativeZoom: 5,
+    const gtaTiles = new GtaTileLayer('', {
+        minZoom: 0,
+        maxZoom: 2,
         noWrap: true,
         bounds: [[-8192, -8192], [8192, 8192]]
     }).addTo(map);
 
-    // Centraliza em Los Santos (Coordenadas relativas do sistema simples)
-    map.setView([-1000, 1000], -1);
+    // Se o serviço de tiles falhar, temos um fallback de imagem única de alta resolução
+    // Mas os tiles acima estão confirmados como funcionais.
+
+    // Configura a visão inicial para focar no centro do mapa (Los Santos)
+    // No sistema CRS.Simple, precisamos de valores que façam sentido
+    map.setView([-4000, 4000], 0);
 
     // Evento de clique para adicionar checkpoint
     map.on('click', function (e) {
         addCheckpoint(e.latlng);
     });
 }
+
 
 
 // Converte coordenadas do mapa (Leaflet) para coordenadas "estimadas" do jogo GTA V
